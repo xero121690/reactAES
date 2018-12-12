@@ -5,7 +5,7 @@ import Note from './Note';
 import Files from './Files';
 import Home from './Home';
 import { Route, Link, Switch, Redirect } from 'react-router-dom';
-// import CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js';
 
 // TODO:
 // Fix: content-type being uploaded to server
@@ -24,6 +24,7 @@ class App extends Component {
 
     }
     this.userButton = this.userButton.bind(this);
+    this.deletePic = this.deletePic.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -33,16 +34,16 @@ class App extends Component {
     this.setState({ [e.target.name]: e.target.value })
   }
 
-  // encryptStuff () {
-  //   let key;
-  //   // if key is not default, replace with updated key, else use key =
-  //   (this.state.key !== '') ? key = this.state.key : key = '1234567891011121'
-  //   var cipherText = CryptoJS.AES.encrypt(this.state.txtData, key);
-  //   this.setState({ 
-  //     cipherText: cipherText,
-  //     isEncrypted: true 
-  //   });
-  // };
+  encryptStuff () {
+    let key;
+    // if key is not default, replace with updated key, else use key =
+    (this.state.key !== '') ? key = this.state.key : key = '1234567891011121'
+    var cipherText = CryptoJS.AES.encrypt(this.state.txtData, key);
+    this.setState({ 
+      cipherText: cipherText,
+      isEncrypted: true 
+    });
+  };
 
 
 
@@ -105,7 +106,7 @@ class App extends Component {
         <Route path="/files" component={Files} />
         <Route 
           path="/note" 
-          render={()=> (
+          render={(props)=> (
             <Note 
               handleSubmit={this.handleSubmit}
               handleChange={this.handleChange}

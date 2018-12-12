@@ -1,5 +1,5 @@
 {
-  "name": "testing-s3",
+  "name": "reactAES",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -7,6 +7,7 @@
     "crypto-js": "^3.1.9-1",
     "react": "^16.5.0",
     "react-dom": "^16.5.0",
+    "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.5"
   },
   "scripts": {
@@ -14,5 +15,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "proxy": "https://localhost:8000/",
+  "babel": {
+    "presets": [
+      "react-app"
+    ]
   }
 }
