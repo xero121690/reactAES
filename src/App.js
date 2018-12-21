@@ -4,6 +4,7 @@ import './App.css';
 import Note from './Note';
 import Files from './Files';
 import Home from './Home';
+import Download from './Download';
 import { Route, Link, Switch, Redirect } from 'react-router-dom';
 // import CryptoJS from 'crypto-js';
 
@@ -20,17 +21,24 @@ class App extends Component {
       encryptionKey: '',
       isEncrypted: false,
       cipherText: '',
-      file: '',
-
+      urlLink: '',
+      fileName: 'testing',
     }
     this.userButton = this.userButton.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.downloadLoad = this.downloadLoad.bind(this);
   }
 
-  handleChange (e) {
+  handleChange = (name, value) => (e) => {
     console.log(e.target);
     console.log('handleChange hit!')
-    this.setState({ [e.target.name]: e.target.value })
+    if (e.target !== undefined) {
+      this.setState({ [e.target.name]: e.target.value })
+    }
+    if (typeof name !== undefined && typeof value !== undefined) {
+      this.setState({ [name]: value })
+    }
+    
   }
 
   // encryptStuff () {
@@ -47,18 +55,21 @@ class App extends Component {
 
 
 
+
+
   userButton () {
     alert('sup ;)');
     console.log('hello');
   };
 
+  // POST for Note upload and encryption
   apiPost = async () => {
     // fetch should have api you are hitting
 
-    const response = await fetch('/submit', {
+    const response = await fetch('/note', {
       method: 'POST', 
       headers: {
-        'Content-Type': 'image/png', // *** fix this content-type
+        'Content-Type': 'text/plain', 
       },
       // converting JSON into string
       body: JSON.stringify({ 
@@ -71,15 +82,42 @@ class App extends Component {
     const body = await response.text();
     console.log('logging response: ', body);
     if (response.status !== 200) throw Error(body.messsage);
-    return body
+    return body;
   };
+
+  // apiPost replacement CONTINUE
+  downloadLoad = async () => {
+    const response = await fetch('/loadNote', {
+      // POST becasue you are sending body
+      method: 'POST',
+      headers: {
+        'Content-type': 'text/plain'
+      },
+      body: JSON.stringify({
+        fileName: this.state.fileName,
+      })
+    });
+   const body = await response.text();
+   console.log('logging response: ', body);
+   console.log(response.status)
+  //  if for whatever reason, no body.message sent, replace it with whatever the body has. (backend)
+   if (response.status !== 200) throw new Error(body.message ? body.message : response.status + ' ' + body);
+   return body;
+  }
 
   
   handleSubmit = async e => {
     e.preventDefault();
     this.apiPost()
-      .then(res => this.setState({ file: res })) // place data incoming here
-      .catch(err => console.log(err)); // if incoming data is error, console.log
+      .then(res => this.setState({ urlLink: res })) // place data incoming here
+      .catch(err => console.log(err)); // if incoming data is error, console.log, it will detect the error matching the await 
+  }
+
+  // CONTINUE
+  searchParams (paramString) {
+    const params = new URLSearchParams(paramString);
+    console.log(params);
+    this.props.handleChange('fileName', params.get('filename'));
   }
 
   
@@ -99,10 +137,22 @@ class App extends Component {
         </nav>
 
         <hr />
-        {/* Switch goes down matching the path, ONLY renders the first path it finds */}
+        {/* Switch goes down matching the path, ONLY renders the first path match it finds */}
         <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/files" component={Files} />
+        <Route 
+          path="/Download" 
+          // passing props here allows react router to pass its properties to the component
+          // properties such as history, location, match 
+          render={(props) => (
+            <Download
+            downloadLoad={this.downloadLoad}
+            fileName={this.state.fileName}
+            handleChange={this.handleChange}
+            {...props}
+            />
+        )} />
         <Route 
           path="/note" 
           render={()=> (
@@ -113,10 +163,11 @@ class App extends Component {
               encryptionKey={this.state.encryptionKey}
               isEncrypted={this.state.isEncrypted}
               cipherText={this.state.cipherText}
-              file={this.state.file}
+              urlLink={this.state.urlLink}
             />
           )} 
         />
+        {/* anything that isn't accounted for above, is redirected to / */}
         <Redirect to="/" />
         </Switch>
         {/* <Note 
@@ -126,7 +177,7 @@ class App extends Component {
           encryptionKey={this.state.encryptionKey}
           isEncrypted={this.state.isEncrypted}
           cipherText={this.state.cipherText}
-          file={this.state.file}
+          urlLink={this.state.urlLink}
 
         /> */}
       </div>

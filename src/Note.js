@@ -14,16 +14,21 @@ class Note extends Component {
       <div className="Note">
         <label>Text data: </label>
         <br/>
-        <textarea onChange={this.props.handleChange} value={this.props.txtData} name={'txtData'}/>
+        {/* 
+        reason this.props.handleChange() has (), and not this.props.handlechange
+        is because handleChange = (name, value) => (e) => 
+        meaning name and value need to be passed, even if it is undefined, hence ()
+        */}
+        <textarea onChange={this.props.handleChange()} value={this.props.txtData} name={'txtData'}/>
         <br />
         <br />
         <label>Key: </label>
-        <input onChange={this.props.handleChange} value={this.props.encryptionKey} name={'encryptionKey'}></input>
+        <input onChange={this.props.handleChange()} value={this.props.encryptionKey} name={'encryptionKey'}></input>
         <button onClick={this.props.handleSubmit}>Encrypt!</button>
         <br/>
 
-        {(this.props.isEncrypted) ? <textarea value={this.props.cipherText} onChange={this.props.handleChange} name={'cipherText'} /> : <br/>}
-        {(this.props.file) ? <div style={box}> {this.props.file} </div>: <br/>}
+        {(this.props.isEncrypted) ? <textarea value={this.props.cipherText} onChange={this.props.handleChange()} name={'cipherText'} /> : <br/>}
+        {(this.props.urlLink) ? <div style={box}> {this.props.urlLink} </div>: <br/>}
       </div>
     );
   }
